@@ -1,0 +1,8 @@
+application: kneetenzero
+version: php
+runtime: php
+api_version: 1
+
+handler:
+- url: /.*
+  script: index.php
