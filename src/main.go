@@ -37,7 +37,7 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 	config = &oauth2.Config{
 		ClientID:     r.FormValue("cid"),
 		ClientSecret: r.FormValue("csecret"),
-		RedirectURL:  "https://go.kneetenzero.appspot.com/callback",
+		RedirectURL:  "http://go.kneetenzero.appspot.com/callback",
 		Scopes:       []string{"https://www.googleapis.com/auth/gmail.readonly"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
