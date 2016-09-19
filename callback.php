@@ -7,7 +7,7 @@ $client = $_SESSION['client'];
 if (isset($_GET['code'])) {
     $client->authenticate($_GET['code']);
     $_SESSION['token'] = $client->getAccessToken();
-    header('Location: http://'.$_SERVER['HTTP_HOST'].'callback');
+    header('Location: http://'.$_SERVER['HTTP_HOST'].'/callback');
     exit;
 }
 
@@ -22,7 +22,7 @@ if ($client->getAccessToken()) {
     } catch (Google_Exception $e) {
         echo $e->getMessage();
     }
-} else {
-    exit;
 }
+
+exit;
 
