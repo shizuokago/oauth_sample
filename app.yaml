@@ -1,8 +1,12 @@
 application: kneetenzero
 version: php
-runtime: php
+runtime: php55
 api_version: 1
 
-handler:
-- url: /.*
+handlers:
+- url: /callback
+  script: callback.php
+- url: /request
+  script: request.php
+- url: /
   script: index.php
