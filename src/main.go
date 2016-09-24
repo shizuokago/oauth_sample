@@ -62,7 +62,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := config.Client(context, token)
 
-	resp, err := client.Get("https://www.googleapis.com/gmail/v1/users/me/messages")
+	resp, err := client.Get("https://www.googleapis.com/gmail/v1/users/me/labels")
 	if err != nil {
 		errorHandler(w, 500, err.Error())
 		return
@@ -70,6 +70,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer resp.Body.Close()
 	b, err := ioutil.ReadAll(resp.Body)
+
 	if err != nil {
 		errorHandler(w, 500, err.Error())
 		return
