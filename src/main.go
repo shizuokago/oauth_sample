@@ -1,7 +1,9 @@
 package kneetenzero
 
 import (
+	"encoding/gob"
 	"fmt"
+	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 	"google.golang.org/appengine"
 	"html/template"
@@ -9,12 +11,13 @@ import (
 	"net/http"
 )
 
-var config *oauth2.Config
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 func init() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/request", requestHandler)
 	http.HandleFunc("/callback", callbackHandler)
+	gob.Register(&oauth2.Config{})
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +37,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func requestHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
-	config = &oauth2.Config{
+	config := &oauth2.Config{
 		ClientID:     r.FormValue("cid"),
 		ClientSecret: r.FormValue("csecret"),
 		RedirectURL:  "http://go.kneetenzero.appspot.com/callback",
@@ -44,6 +47,9 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 			TokenURL: "https://accounts.google.com/o/oauth2/token",
 		},
 	}
+	session, _ := store.Get(r, "oauth")
+	session.Values["config"] = config
+	session.Save(r, w)
 
 	url := config.AuthCodeURL("ramdam", oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -53,6 +59,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	context := appengine.NewContext(r)
 	code := r.FormValue("code")
+
+	session, _ := store.Get(r, "oauth")
+	config, _ := session.Values["config"].(*oauth2.Config)
 
 	token, err := config.Exchange(context, code)
 	if err != nil {
