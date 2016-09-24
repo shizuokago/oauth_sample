@@ -1,1 +1,5 @@
 We make a sample of each language in the branch.
+
+git clone -b v1-master https://github.com/google/google-api-php-client.git
+
+composer install

@@ -15,14 +15,19 @@ if (isset($_SESSION['token'])) {
     $client->setAccessToken($_SESSION['token']);
 }
 
-if ($client->getAccessToken()) {
-    try {
-        echo "Google Drive Api 連携完了！<br>";
         $_SESSION['client'] = $client;
-    } catch (Google_Exception $e) {
-        echo $e->getMessage();
+
+$service = new Google_Service_Gmail($client);
+
+$user = 'me';
+$results = $service->users_labels->listUsersLabels($user);
+
+if (count($results->getLabels()) == 0) {
+    print "No labels found.\n";
+} else {
+    print "Labels:\n";
+    foreach ($results->getLabels() as $label) {
+        printf("- %s\n", $label->getName());
     }
 }
-
-exit;
 
