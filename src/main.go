@@ -38,20 +38,22 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	config := &oauth2.Config{
-		ClientID:     r.FormValue("cid"),
-		ClientSecret: r.FormValue("csecret"),
-		RedirectURL:  "https://" + r.Host + "/callback",
-		Scopes:       []string{"https://www.googleapis.com/auth/gmail.readonly"},
+		ClientID:    r.FormValue("cid"),
+		RedirectURL: "https://" + r.Host + "/callback",
+		Scopes:      []string{"https://www.googleapis.com/auth/gmail.readonly"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
 			TokenURL: "https://accounts.google.com/o/oauth2/token",
 		},
 	}
+
+	url := config.AuthCodeURL("ramdam", oauth2.AccessTypeOnline)
+
+	config.ClientSecret = r.FormValue("csecret")
 	session, _ := store.Get(r, "oauth")
 	session.Values["config"] = config
 	session.Save(r, w)
 
-	url := config.AuthCodeURL("ramdam", oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
